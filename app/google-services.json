@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "909611799367",
+    "firebase_url": "https://okarduino-df904.firebaseio.com",
+    "project_id": "okarduino-df904",
+    "storage_bucket": "okarduino-df904.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909611799367:android:1879b76a84b9ba7d",
+        "android_client_info": {
+          "package_name": "app.bqlab.okarduino"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "909611799367-cg9ggqha68idq0nvm89b3mbfsc2gc4c1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBniPRp0Ida0QPy_IlmWhnvmcr_GWz4BmI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
