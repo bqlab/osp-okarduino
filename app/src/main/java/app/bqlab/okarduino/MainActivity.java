@@ -6,17 +6,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 
 public class MainActivity extends AppCompatActivity {
 
-    boolean isConnected;
-    int brightness;
+    boolean co; //연결
+    int br; //밝기
 
     Button mainConnect;
     Button mainBright;
-    SeekBar mainBrightBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init() {
+        br = getSharedPreferences("settings", MODE_PRIVATE).getInt("br", 100);
         mainConnect = findViewById(R.id.main_connect);
         mainBright = findViewById(R.id.main_bright);
-        mainBrightBar = new SeekBar(MainActivity.this);
         mainConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,48 +38,53 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("연결", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("연결", String.valueOf(isConnected));
-                                isConnected = true;
+                                Log.d("연결", String.valueOf(co));
+                                co = true;
                             }
                         })
                         .setNegativeButton("연결 끊음", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("연결", String.valueOf(isConnected));
-                                isConnected = false;
+                                Log.d("연결", String.valueOf(co));
+                                co = false;
                             }
-                        }).show();
+                        })
+                        .show();
             }
         });
         mainBright.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SeekBar s = new SeekBar(MainActivity.this);
+                s.setProgress(MainActivity.this.br);
+                s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("br", MainActivity.this.br).apply();
+                        Log.d("밝기", String.valueOf(MainActivity.this.br));
+                        MainActivity.this.br = progress;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
                 new AlertDialog.Builder(MainActivity.this)
                         .setMessage("밝기를 설정합니다.")
-                        .setView(mainBrightBar)
+                        .setView(s)
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
-                        }).show();
-            }
-        });
-        mainBrightBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                MainActivity.this.brightness = progress;
-                Log.d("밝기", String.valueOf(brightness));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
+                        })
+                        .show();
             }
         });
     }
