@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">okarduino</string>
-    <string name="main_connect">Connect to device</string>
+    <string name="main_power">Turn on the power</string>
     <string name="main_bright">Set the brightness</string>
 </resources>

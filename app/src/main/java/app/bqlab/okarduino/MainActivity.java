@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 
@@ -17,9 +16,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Runnable {
 
-    boolean co; //연결
+    boolean pw; //전원
     int br; //밝기
 
     Button mainConnect;
@@ -35,28 +34,35 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
-    public void init() {
+    @Override
+    public void run() {
+        while(pw) {
+            sync();
+            monitorData();
+        }
+    }
+
+    private void init() {
         br = getSharedPreferences("settings", MODE_PRIVATE).getInt("br", 100);
-        mainConnect = findViewById(R.id.main_connect);
+        mainConnect = findViewById(R.id.main_power);
         mainBright = findViewById(R.id.main_bright);
         mainConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(MainActivity.this)
-                        .setMessage("서버와 연결을 시작합니다.")
-                        .setPositiveButton("연결", new DialogInterface.OnClickListener() {
+                        .setMessage("디바이스의 전원을 켭니다.")
+                        .setPositiveButton("켜기", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                databaseReference.child("test").setValue(true);
-                                Log.d("연결", databaseReference.child("test").getKey());
-                                co = true;
+                                MainActivity.this.pw = true;
+
                             }
                         })
-                        .setNegativeButton("연결 끊음", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("끄기", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("연결", String.valueOf(co));
-                                co = false;
+                                MainActivity.this.pw = false;
+                                getSharedPreferences("settings", MODE_PRIVATE).edit().putBoolean("pw", MainActivity.this.pw).apply();
                             }
                         })
                         .show();
@@ -70,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("br", MainActivity.this.br).apply();
-                        Log.d("밝기", String.valueOf(MainActivity.this.br));
                         MainActivity.this.br = progress;
                     }
 
@@ -100,13 +104,54 @@ public class MainActivity extends AppCompatActivity {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) { //서버의 데이터가 변경되었을 때 호출되는 함수
-                dataSnapshot.child("test").getValue(true);
+                try {
+                    MainActivity.this.pw = (boolean) dataSnapshot.child("pw").getValue();
+                    MainActivity.this.br = (int) dataSnapshot.child("br").getValue();
+                } catch (NullPointerException e) {
+                    showNoDataDialog();
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w("tag", "onCancelled", databaseError.toException());
+                showNoDataDialog();
             }
         });
+    }
+
+
+    private void sync() {
+        databaseReference.child("pw").setValue(MainActivity.this.pw);
+        databaseReference.child("br").setValue(MainActivity.this.br);
+        getSharedPreferences("settings", MODE_PRIVATE).edit().putBoolean("pw", MainActivity.this.pw).apply();
+        getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("br", MainActivity.this.br).apply();
+    }
+
+    private void monitorData() {
+        try {
+            Log.d("전원", databaseReference.child("pw").getKey());
+            Log.d("밝기", databaseReference.child("br").getKey());
+        } catch (NullPointerException e) {
+            showNoDataDialog();
+        }
+    }
+
+    private void showNoDataDialog() {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("데이터를 불러올 수 없습니다.")
+                .setMessage(" - 네트워크 상태를 확인하세요.\n - 서버 접근 권한을 요청하세요.\n - 기본 데이터를 삭제하지 마세요.")
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        finishAffinity();
+                    }
+                })
+                .show();
     }
 }
