@@ -5,10 +5,10 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,13 +16,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements Runnable {
+public class MainActivity extends AppCompatActivity {
 
-    boolean pw; //전원
-    int br; //밝기
+    Boolean pw = false; //전원
+    Integer br = 50; //밝기
+    Integer tm = 0; //온도
 
-    Button mainConnect;
+    Button mainPower;
     Button mainBright;
+    Button mainTemp;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -34,19 +36,11 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         init();
     }
 
-    @Override
-    public void run() {
-        while(pw) {
-            sync();
-            monitorData();
-        }
-    }
-
     private void init() {
-        br = getSharedPreferences("settings", MODE_PRIVATE).getInt("br", 100);
-        mainConnect = findViewById(R.id.main_power);
+        mainPower = findViewById(R.id.main_power);
         mainBright = findViewById(R.id.main_bright);
-        mainConnect.setOnClickListener(new View.OnClickListener() {
+        mainTemp = findViewById(R.id.main_temp);
+        mainPower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(MainActivity.this)
@@ -54,15 +48,14 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         .setPositiveButton("켜기", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                MainActivity.this.pw = true;
+                                databaseReference.child("pw").setValue(true);
 
                             }
                         })
                         .setNegativeButton("끄기", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                MainActivity.this.pw = false;
-                                getSharedPreferences("settings", MODE_PRIVATE).edit().putBoolean("pw", MainActivity.this.pw).apply();
+                                databaseReference.child("pw").setValue(false);
                             }
                         })
                         .show();
@@ -76,7 +69,9 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        MainActivity.this.br = progress;
+                        databaseReference.child("br").setValue(progress);
+                        if (!pw)
+                            Toast.makeText(MainActivity.this, "전원이 켜졌을 때 적용됩니다.", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -101,12 +96,31 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                         .show();
             }
         });
+        mainTemp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    String s = "디바이스가 감지한 온도는 " + tm.toString() + "도입니다.";
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setMessage(s)
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                } catch (NullPointerException e) {
+                    showNoDataDialog();
+                }
+            }
+        });
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) { //서버의 데이터가 변경되었을 때 호출되는 함수
                 try {
-                    MainActivity.this.pw = (boolean) dataSnapshot.child("pw").getValue();
-                    MainActivity.this.br = (int) dataSnapshot.child("br").getValue();
+                    MainActivity.this.pw = dataSnapshot.child("pw").getValue(Boolean.class);
+                    MainActivity.this.br = dataSnapshot.child("br").getValue(Integer.class);
+                    MainActivity.this.tm = dataSnapshot.child("tm").getValue(Integer.class);
                 } catch (NullPointerException e) {
                     showNoDataDialog();
                 }
@@ -117,23 +131,6 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 showNoDataDialog();
             }
         });
-    }
-
-
-    private void sync() {
-        databaseReference.child("pw").setValue(MainActivity.this.pw);
-        databaseReference.child("br").setValue(MainActivity.this.br);
-        getSharedPreferences("settings", MODE_PRIVATE).edit().putBoolean("pw", MainActivity.this.pw).apply();
-        getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("br", MainActivity.this.br).apply();
-    }
-
-    private void monitorData() {
-        try {
-            Log.d("전원", databaseReference.child("pw").getKey());
-            Log.d("밝기", databaseReference.child("br").getKey());
-        } catch (NullPointerException e) {
-            showNoDataDialog();
-        }
     }
 
     private void showNoDataDialog() {
