@@ -18,6 +18,11 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
+    //referred to http://blog.naver.com/PostView.nhn?blogId=chandong83&logNo=221081942490&parentCategoryNo=&categoryNo=65&viewDate=&isShowPopularPosts=false&from=postView
+    //referred to https://doorbw.tistory.com/176
+    //referred to http://alnova2.tistory.com/1155
+    //referred to https://medium.com/qandastudy/dialogflow%EB%A1%9C-%EA%B0%84%EB%8B%A8%ED%95%98%EA%B2%8C-%EC%B1%97%EB%B4%87-%EB%A7%8C%EB%93%A4%EA%B8%B0-91858ae56b5b
+
     Boolean pw = false; //전원
     Integer br = 50; //밝기
     Integer tm = 0; //온도
