@@ -1,12 +1,14 @@
 package app.bqlab.okarduino;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -23,13 +25,22 @@ public class MainActivity extends AppCompatActivity {
     //referred to http://alnova2.tistory.com/1155
     //referred to https://medium.com/qandastudy/dialogflow%EB%A1%9C-%EA%B0%84%EB%8B%A8%ED%95%98%EA%B2%8C-%EC%B1%97%EB%B4%87-%EB%A7%8C%EB%93%A4%EA%B8%B0-91858ae56b5b
 
+    final int WHITE = 0;
+    final int RED = 1;
+    final int BLUE = 2;
+    final int YELLOW = 3;
+    final int GREEN = 4;
+    final int ERROR = 5;
+
     Boolean pw = false; //전원
     Integer br = 50; //밝기
     Integer tm = 0; //온도
+    Integer color = 0; //색상
 
     Button mainPower;
     Button mainBright;
     Button mainTemp;
+    Button mainColor;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -44,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         mainPower = findViewById(R.id.main_power);
         mainBright = findViewById(R.id.main_bright);
+        mainColor = findViewById(R.id.main_color);
         mainTemp = findViewById(R.id.main_temp);
         mainPower.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +113,38 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
         });
+        mainColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText e = new EditText(MainActivity.this);
+                new AlertDialog.Builder(MainActivity.this)
+                        .setMessage("색상을 입력하세요.")
+                        .setView(e)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                int i = getColorTextToInteger(e.getText().toString());
+                                if (i == 5) {
+                                    new AlertDialog.Builder(MainActivity.this)
+                                            .setMessage("하양, 빨강, 파랑, 노랑, 초록 중 하나만 입력하세요.")
+                                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            }).show();
+                                } else
+                                    databaseReference.child("color").setValue(i);
+                            }
+                        })
+                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+            }
+        });
         mainTemp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this.pw = dataSnapshot.child("pw").getValue(Boolean.class);
                     MainActivity.this.br = dataSnapshot.child("br").getValue(Integer.class);
                     MainActivity.this.tm = dataSnapshot.child("tm").getValue(Integer.class);
+                    MainActivity.this.color = dataSnapshot.child("cr").getValue(Integer.class);
                 } catch (NullPointerException e) {
                     showNoDataDialog();
                 }
@@ -155,5 +200,22 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    private int getColorTextToInteger(String s) {
+        switch (s) {
+            case "하양":
+                return WHITE;
+            case "빨강":
+                return RED;
+            case "파랑":
+                return BLUE;
+            case "노랑":
+                return YELLOW;
+            case "초록":
+                return GREEN;
+            default:
+                return ERROR;
+        }
     }
 }
