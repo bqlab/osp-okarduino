@@ -21,6 +21,12 @@
         android:text="@string/main_bright" />
 
     <Button
+        android:id="@+id/main_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_color" />
+
+    <Button
         android:id="@+id/main_temp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
