@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     //referred to https://doorbw.tistory.com/176
     //referred to http://alnova2.tistory.com/1155
     //referred to https://medium.com/qandastudy/dialogflow%EB%A1%9C-%EA%B0%84%EB%8B%A8%ED%95%98%EA%B2%8C-%EC%B1%97%EB%B4%87-%EB%A7%8C%EB%93%A4%EA%B8%B0-91858ae56b5b
+    //reffered to https://medium.com/@jwlee98/gcp-dialogflow-%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EA%B0%84%EB%8B%A8-%EC%B1%97%EB%B4%87-%EB%A7%8C%EB%93%A4%EA%B8%B0-514ea25e4961
+    //reffered to http://ndb796.tistory.com/118?category=1013435
 
     Boolean pw = false; //전원
     Integer br = 50; //밝기
