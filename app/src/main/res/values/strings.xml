@@ -4,4 +4,5 @@
     <string name="main_bright">Set lamp brightness</string>
     <string name="main_color">Set lamp light color</string>
     <string name="main_temp">View senced temperature</string>
+    <string name="main_console">Developer command console</string>
 </resources>

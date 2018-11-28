@@ -31,4 +31,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/main_temp" />
+
+    <Button
+        android:id="@+id/main_console"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_console" />
 </LinearLayout>
