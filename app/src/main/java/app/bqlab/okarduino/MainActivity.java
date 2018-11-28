@@ -20,19 +20,14 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    //referred to http://blog.naver.com/PostView.nhn?blogId=chandong83&logNo=221081942490&parentCategoryNo=&categoryNo=65&viewDate=&isShowPopularPosts=false&from=postView
-    //referred to https://doorbw.tistory.com/176
-    //referred to http://alnova2.tistory.com/1155
-    //referred to https://medium.com/qandastudy/dialogflow%EB%A1%9C-%EA%B0%84%EB%8B%A8%ED%95%98%EA%B2%8C-%EC%B1%97%EB%B4%87-%EB%A7%8C%EB%93%A4%EA%B8%B0-91858ae56b5b
-    //reffered to https://medium.com/@jwlee98/gcp-dialogflow-%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EA%B0%84%EB%8B%A8-%EC%B1%97%EB%B4%87-%EB%A7%8C%EB%93%A4%EA%B8%B0-514ea25e4961
-    //reffered to http://ndb796.tistory.com/118?category=1013435
-
-    final int WHITE = 0;
     final int RED = 1;
-    final int BLUE = 2;
+    final int ORANGE = 2;
     final int YELLOW = 3;
     final int GREEN = 4;
-    final int ERROR = 5;
+    final int BLUE = 5;
+    final int NAVY = 6;
+    final int PURPLE = 7;
+    final int ERROR = 8;
 
     Boolean pw = false; //전원
     Integer br = 50; //밝기
@@ -128,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                                 int i = getColorTextToInteger(e.getText().toString());
                                 if (i == 5) {
                                     new AlertDialog.Builder(MainActivity.this)
-                                            .setMessage("하양, 빨강, 파랑, 노랑, 초록 중 하나만 입력하세요.")
+                                            .setMessage("빨강부터 보라 중 하나를 선택하세요.")
                                             .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
@@ -206,16 +201,20 @@ public class MainActivity extends AppCompatActivity {
 
     private int getColorTextToInteger(String s) {
         switch (s) {
-            case "하양":
-                return WHITE;
             case "빨강":
                 return RED;
-            case "파랑":
-                return BLUE;
+            case "주황":
+                return ORANGE;
             case "노랑":
                 return YELLOW;
             case "초록":
                 return GREEN;
+            case "파랑":
+                return BLUE;
+            case "남색":
+                return NAVY;
+            case "보라":
+                return PURPLE;
             default:
                 return ERROR;
         }
