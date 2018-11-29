@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 databaseReference.child("pw").setValue(true);
-
                             }
                         })
                         .setNegativeButton("끄기", new DialogInterface.OnClickListener() {
