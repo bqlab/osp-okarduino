@@ -136,6 +136,11 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       })
   }
   
+  function setEnd(agent) {
+      agent.add("오케이펫 서비스를 종료합니다.");
+      //must set end conversation at intents section.
+  }
+  
   // // Uncomment and edit to make your own intent handler
   // // uncomment `intentMap.set('your intent name here', yourFunctionHandler);`
   // // below to get this function to be run when a Dialogflow intent is matched
@@ -178,6 +183,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   intentMap.set('SetPower', setPower);
   intentMap.set('SetPowerOn', setPowerOn);
   intentMap.set('SetPowerOff', setPowerOff);
+  intentMap.set('SetEnd', setEnd);
   intentMap.set('CheckTemperature', checkTemperature);
   // intentMap.set('your intent name here', yourFunctionHandler);
   // intentMap.set('your intent name here', googleAssistantHandler);
