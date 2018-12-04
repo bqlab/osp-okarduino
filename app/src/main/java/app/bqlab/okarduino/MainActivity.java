@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     Button mainBright;
     Button mainTemp;
     Button mainColor;
-    Button mainConsole;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         mainBright = findViewById(R.id.main_bright);
         mainColor = findViewById(R.id.main_color);
         mainTemp = findViewById(R.id.main_temp);
-        mainConsole = findViewById(R.id.main_console);
         mainPower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 int i = getColorTextToInteger(e.getText().toString());
-                                if (i == 5) {
+                                if (i == 8) {
                                     new AlertDialog.Builder(MainActivity.this)
                                             .setMessage("빨강부터 보라 중 하나를 선택하세요.")
                                             .setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -159,28 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (NullPointerException e) {
                     showNoDataDialog();
                 }
-            }
-        });
-        mainConsole.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final EditText e = new EditText(MainActivity.this);
-                new AlertDialog.Builder(MainActivity.this)
-                        .setMessage("온도 값을 입력하세요.")
-                        .setView(e)
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                databaseReference.child("tm").setValue(Integer.parseInt(e.getText().toString()));
-                                mainConsole.setVisibility(View.GONE);
-                            }
-                        })
-                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
             }
         });
         databaseReference.addValueEventListener(new ValueEventListener() {
